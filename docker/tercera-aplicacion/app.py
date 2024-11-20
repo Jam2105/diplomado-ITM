@@ -1,20 +1,20 @@
-from flask import Flask
+from flask import Flask, request
 import boto3
 
 app = Flask(__name__)
 dynamodb = boto3.resource('dynamodb', region_name='us-east-1')
-table = dynamodb.Table('tabla-johanmoreno')
+tabla = dynamodb.Table('tabla-juangomez')
 
 
-@app.route('/insert',methods=['POST'])
+@app.route('/insert', methods=['POST'])
 def index():
-    data = request.json
-    item = {**data}
+  data = request.json
+  item = {**data}
 
-    tabla.put_item(Item=item)
+  tabla.put_item(Item=item)
 
-    return 'se guardo exitosamente'
+  return 'Se guardó exitosamente'
+
 
 if __name__ == "__main__":
   app.run(debug=True, host='0.0.0.0', port=5000)
-
