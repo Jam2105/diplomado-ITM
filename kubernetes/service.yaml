@@ -4,7 +4,7 @@ metadata:
   name: 1152187139-service
 spec:
   selector:
-    app: 1152187139
+    app: jam-1152187139
   ports:
     - protocol: TCP
       port: 80
