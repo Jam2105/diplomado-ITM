@@ -1,24 +1,27 @@
- version: 0.2
- phases:
-   install:
-     commands:
-       - echo "Fase de instalación"
-   pre_build:
-       commands:
-         # Docker Image Tag with Date Time & Code Buiild Resolved Source Version
-         - TAG="$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
-         - sed -i 's@CONTAINER_IMAGE@'"047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG"'@' ./kubernetes/deployment.yaml
-         - echo "Login en el repositorio de Amazon ECR..."
-         - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 047719650114.dkr.ecr.us-east-1.amazonaws.com
-   build:
-     commands:
-       # Build Docker Image
-       - echo "construyendo imagen de docker"
-       - cd .docker/tercera-aplicacion
-       - docker build -t 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG .
-   post_build:
-     commands:
-       # Push Docker Image to ECR Repository
-       - echo "subiendo imagen a ECR"
-       - docker push 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG
-
+version: 0.2
+phases:
+  install:
+    commands:
+      - echo "Fase de instalación"
+  pre_build:
+      commands:
+        # Docker Image Tag with Date Time & Code Buiild Resolved Source Version
+        - TAG="$(date +%Y-%m-%d.%H.%M.%S).$(echo $CODEBUILD_RESOLVED_SOURCE_VERSION | head -c 8)"
+        - sed -i 's@CONTAINER_IMAGE@'"047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG"'@' ./kubernetes/deployment.yaml
+        - echo "Login en el repositorio de Amazon ECR..."
+        - aws ecr get-login-password --region us-east-1 | docker login --username AWS --password-stdin 047719650114.dkr.ecr.us-east-1.amazonaws.com
+        - export KUBECONFIG=$HOME/.kube/config
+  build:
+    commands:
+      # Build Docker Image
+      - echo "Construyendo imagen de docker"
+      - cd ./docker/tercera-aplicacion
+      - docker build -t 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG .
+  post_build:
+    commands:
+      # Push Docker Image to ECR Repository
+      - echo "Subiendo imagen a ECR"
+      - docker push 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG
+      - aws eks update-kubeconfig --region us-east-1 --name scrumptious-creature-1732631251
+      - kubectl apply -f ./kubernetes/deployment.yaml
+      - kubectl apply -f ./kubernetes/nodeport.yaml
