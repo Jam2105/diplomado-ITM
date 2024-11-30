@@ -13,9 +13,12 @@
    build:
      commands:
        # Build Docker Image
-       - echo "Build started on `date`"
+       - echo "construyendo imagen de docker"
+       - cd .docker/tercera-aplicacion
+       - docker build -t 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG .
    post_build:
      commands:
        # Push Docker Image to ECR Repository
-       - echo "Build completed on `date`"    
+       - echo "subiendo imagen a ECR"
+       - docker push 047719650114.dkr.ecr.us-east-1.amazonaws.com/j1152187139:$TAG
 
